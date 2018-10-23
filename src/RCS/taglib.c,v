@@ -1,0 +1,579 @@
+head	1.4;
+access;
+symbols;
+locks
+	john:1.4; strict;
+comment	@ * @;
+
+
+1.4
+date	98.01.13.22.11.45;	author john;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	97.05.29.20.18.41;	author john;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	97.01.22.16.00.34;	author john;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	97.01.15.16.12.29;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@Original version - pre state driven parser
+@
+
+
+1.4
+log
+@add taggetvalue, plus bug fixes
+@
+text
+@/*
+	Tag library routines
+
+Note that these routines are ALPHA software, developed piecemeal while I
+was testing various ideas.
+
+
+They are released under the GNU Library Copyright.
+
+	Author: John Lines <john@@paladin.demon.co.uk>
+
+*/
+
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "tagtypes.h"
+
+
+struct tagrecord *gettagrec(FILE *f,char *fieldbuffer);
+struct tagrecord *gettaghdr(FILE *f,char *fieldbuffer);
+struct tagrecord *gettagrechdr(FILE *f,char *fieldbuffer, char *Endlabel);
+void puttagrec(FILE *f, struct tagrecord *rec);
+
+struct tagrecord *gettaghdr(FILE *f, char *fieldbuffer)
+{
+ return gettagrechdr(f,fieldbuffer,"Endh");
+}
+
+struct tagrecord *gettagrec(FILE *f, char *fieldbuffer)
+{
+ return gettagrechdr(f,fieldbuffer,"End");
+}
+
+
+
+struct tagrecord *gettagrechdr(FILE *f,char *fieldbuffer,char *Endlabel)
+{
+/* enum states= {tag,colon,colonspace,svalue,eoln,doublecolon};  */
+#define initial 0
+#define tag 1
+#define colon 2
+#define colonspace 3
+#define svalue 4
+#define eoln 5
+#define doublecolon 6
+#define dcspace 7
+#define inendlabel 8
+#define mlvalue 9		/* multiline value */
+#define endlabeleoln 10
+#define mleoln 11
+#define mlmatch 12
+
+ char ch;
+ char tagname[128];
+ char endlabel[128];
+ int tagptr=0;
+ int labelptr;
+ int bufptr=0;
+/* enum states*/   int state=initial;    /* start off as if we had just been at an end of line */
+ struct tagrecord *current=0;
+ struct tagrecord *previous=0;
+ struct tagrecord *first=0;
+ 
+
+ /* get tag record items until we hit one where the tagname is End */
+
+while (!feof(f)) {
+  /* get items - starts to get tricky because we want to be able to get
+   items with large blocks of text, so how do I allocate the memory ??
+    - ah - I get it allocated by someone else
+*/
+ ch=fgetc(f);
+ switch(state) {
+case initial:
+/* we are in this state when we have not yet read any input, or only blank lines */
+   if (ch=='\n') {}
+   else {
+     if (feof(f)) break;
+     state=tag;
+     tagname[0]=ch;
+     tagptr=1;
+     }
+  break;
+case tag:
+       if (ch==':') {
+           state=colon;
+           tagname[tagptr]=0;
+           bufptr=0;
+         }
+      else if (ch=='\n') {
+         fprintf(stderr,"Taglib error - End of line in tag\n");
+         return 0;
+      } else {
+             tagname[tagptr]=ch;
+   }
+   if (tagptr > 127) {
+       /* We should never have a tag longer than 127 characters */
+       /* return a null record */
+       fprintf(stderr,"Taglib error - tagptr > 127\n");
+       return 0;
+       }
+
+   tagptr++;
+   break;
+case colon:
+   if (ch==':') { state=doublecolon ; }
+   else if (ch==' ') { }
+   else if (ch=='\n') {
+/* Null value, still need to write it out */
+/* this handling of null svalues needs work */
+    /* printf("Null string value\n"); */
+/* repeat the same stuff we get for a '\n' if we were in an svalue - this needs
+ a rewrite to sort this out
+*/
+      state=eoln;
+      fieldbuffer[bufptr]=0;
+       /* allocate a record structure for the fields */
+         current= (struct tagrecord *)malloc(sizeof(struct tagrecord));
+         if (previous!=0) previous->next=current;
+         previous=current;
+         current->tagname=malloc(strlen(tagname)+1);
+         strcpy(current->tagname,tagname);
+         current->value=malloc(strlen(fieldbuffer)+1);
+         strcpy(current->value,fieldbuffer);
+         current->delimiter=0;
+         current->next=0;
+         if (first==0) first=current;
+       /* check to see if this is the end label */
+    if (strcmp(tagname,Endlabel)==0) {
+         /* tidy up our current tagrecord structure */
+         if (current != 0) current->next=0;
+         return first;
+         }
+     }
+   else {
+      /* first character of the value */
+      state=svalue;
+      fieldbuffer[0]=ch;
+      bufptr=1;
+      }
+   break;
+case svalue:
+   if (ch=='\n') {
+      state=eoln;
+      fieldbuffer[bufptr]=0;
+       /* allocate a record structure for the fields */
+         current= (struct tagrecord *)malloc(sizeof(struct tagrecord));
+         if (previous!=0) previous->next=current;
+         previous=current;
+         current->tagname=malloc(strlen(tagname)+1);
+         strcpy(current->tagname,tagname);
+         current->value=malloc(strlen(fieldbuffer)+1);
+         strcpy(current->value,fieldbuffer);
+         current->delimiter=0;
+         current->next=0;
+         if (first==0) first=current;
+       /* check to see if this is the end label */
+    if (strcmp(tagname,Endlabel)==0) {
+         /* tidy up our current tagrecord structure */
+         if (current != 0) current->next=0;
+         return first;
+         }
+   } else {
+      fieldbuffer[bufptr]=ch;
+      bufptr++;
+   }
+  break;
+case eoln:
+   if (ch=='\n') {}
+   else {
+     state=tag;
+     tagname[0]=ch;
+     tagptr=1;
+     }
+  break;
+case doublecolon:
+   if (ch==' ') { /* state=dcspace */ }
+   else {
+      /* first character of the value */
+      state=inendlabel;
+      endlabel[0]=ch;
+      labelptr=1;
+      }
+  break;
+case dcspace:
+/* we should never reach here */
+   if (ch==' ') { }
+   else {
+      /* first character of the value */
+      state=inendlabel;
+      endlabel[0]=ch;
+      labelptr=1;
+      }
+   break;
+case inendlabel:
+   if (ch=='\n') {
+            state=endlabeleoln;
+            endlabel[labelptr]=0;
+ }
+   else {
+       endlabel[labelptr]=ch;
+       labelptr++;
+   }
+break;
+case endlabeleoln:
+     fieldbuffer[0]=ch;
+     bufptr=1;
+     labelptr=0;            /* We are reusing this to indicate how far we
+			have got in matching the current label */
+/*      fprintf(stderr,"State endlabeleoln ch=%c*\n",ch); */
+
+     if (ch==endlabel[0]) {state=mlmatch; labelptr++;}
+          else  state=mlvalue ;
+  break;
+case mlmatch:
+/* We are in a multi line value part, and we match the end label so far */
+/*      fprintf(stderr,"State mlmatch ch=%c*\n",ch); */
+    if (ch=='\n')  {
+       /* End of line, did we match the end of string */
+       if (endlabel[labelptr]==0) { 
+           /* Yes we did */
+           /* take the end label out of fieldbuffer, by putting in a null */
+           fieldbuffer[bufptr-strlen(endlabel)]=0;
+           current= (struct tagrecord *)malloc(sizeof(struct tagrecord));
+         if (previous!=0) previous->next=current;
+         previous=current;
+         current->tagname=malloc(strlen(tagname)+1);
+         strcpy(current->tagname,tagname);
+         current->value=malloc(strlen(fieldbuffer)+1);
+         strcpy(current->value,fieldbuffer);
+         current->delimiter=malloc(strlen(endlabel)+1);
+         strcpy(current->delimiter,endlabel);
+         current->next=0;
+         if (first==0) first=current;
+	state=eoln;
+
+        } else {
+        /* no we didnt */
+        labelptr=0;
+        fieldbuffer[bufptr]=ch;
+        bufptr++;
+        }
+     }
+     else {
+    /* not end of line */
+    fieldbuffer[bufptr]=ch;
+    bufptr++;
+    if (ch==endlabel[labelptr]) state=mlmatch; else state=mlvalue;
+    labelptr++;
+    }
+   break;
+case mlvalue:
+/* we are in a multiline value part, and we dont match the end label */
+  if (ch=='\n') {
+     labelptr=0; state=mlmatch;
+     }
+   fieldbuffer[bufptr]=ch;
+   bufptr++;
+   break;
+
+
+}  /* end of the case */
+
+}
+/* if we get here then we hit an end of file */
+if (state != initial) fprintf(stderr,"Taglib - end of file while state is %d\n",state);
+return 0;
+}
+
+void puttagrec(FILE *f, struct tagrecord *rec)
+{
+ struct tagrecord *current;
+ int endseen=0;
+
+current=rec;
+
+while (current!=0) {
+  if (strcmp(current->tagname,"End")==0) endseen=1;
+  fprintf(f,"%s:",current->tagname);
+  if (current->delimiter!=0) {
+          fprintf(f,": %s\n",current->delimiter);
+          }
+     else
+         {
+          fprintf(f," ");
+         };
+  if (current->value!=0) fprintf(f,"%s",current->value);
+  if (current->delimiter==0) fprintf(f,"\n"); 
+  if (current->delimiter!=0) fprintf(f,"%s\n",current->delimiter);
+  current=current->next;
+  }
+if ((!endseen)&& (current!=0)) fprintf(f,"End:\n");
+}
+
+int taggetvalue(char *value, const struct tagrecord *rec, const char *fieldname, const int maxlen)
+
+{
+ struct tagrecord *current;
+value[0]=0;
+current=rec;
+while (current !=0) {
+  if (strcmp(current->tagname,fieldname)==0) {
+     strncpy(value,current->value,maxlen); return 1;
+     }
+current=current->next;
+}
+return 0;
+}
+
+
+
+/* Opentagdefaults opens a tag defaults file, looking in a series of places
+for it. Programs which use these taglib routines can use the tagdefaults
+files to get various parameters.
+
+The sequence is
+	opentagdefaults
+	gettagdefval(name, returned-value)
+	...
+	closetagdefaults
+
+	Do the rest of the program
+
+The tag defaults file is structured as a single tag record, with the field
+names being the parameters we want to set.
+
+*/
+
+struct tagrecord *tagdefaultsrec=NULL;
+
+int opentagdefaults ()
+{
+FILE *tagdefaultsfile;
+char *tagdefaultsfieldbuffer;
+int tagdefaultsrecbufsize=2000;
+
+tagdefaultsfile=fopen(strcat(getenv("HOME"),".tagdefaults"),"r");
+if (tagdefaultsfile==NULL) {
+    tagdefaultsfile = fopen("/usr/lib/tag/tagdefaults","r");
+   /* other possible values here */
+    }
+if (tagdefaultsfile==NULL) {
+    return 0;
+}
+tagdefaultsfieldbuffer=malloc(tagdefaultsrecbufsize);
+tagdefaultsrec=gettagrec(tagdefaultsfile,tagdefaultsfieldbuffer);
+
+free(tagdefaultsfieldbuffer);
+ 
+fclose(tagdefaultsfile);
+return 1;
+
+}
+
+int gettagdefval(const char *name, char *value)
+{
+struct tagrecord *current;
+
+current=tagdefaultsrec;
+while (current!=0) {
+  if ( strcmp(current->tagname,name)) {
+       strcpy(value,current->value);
+       return 1;
+       }
+  current=current->next;
+}
+/* we didnt find anything - return a failure flag */
+return 0;
+}
+
+
+int closetagdefaults ()
+{
+
+return 1;
+}
+
+@
+
+
+1.3
+log
+@Fix problem with Tag: space newline
+@
+text
+@d180 1
+a180 1
+   if (ch==' ') { state=dcspace; }
+d189 1
+d213 1
+d215 2
+a216 1
+     if (ch==endlabel[0]) state=mlmatch; else state=mlvalue;
+d220 1
+d291 1
+a291 1
+  fprintf(f,"\n");
+d297 17
+@
+
+
+1.2
+log
+@State driven version of parser
+@
+text
+@d110 1
+a110 1
+   else if (ch==' ') { state=colonspace; }
+a144 9
+case colonspace:
+   if (ch==' ') { }
+   else {
+      /* first character of the value */
+      state=svalue;
+      fieldbuffer[0]=ch;
+      bufptr=1;
+      }
+   break;
+d286 2
+a287 1
+  fprintf(f,"%s\n",current->value);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a6 1
+They need a complete rewrite into a clean state driven code.
+d41 15
+a55 1
+ enum states= {tag,colon,colonspace,value,eoln,doublecolon}; 
+a58 1
+ int intag=1;
+d62 1
+a62 2
+ int HasEndLabel=0;
+ int linestartptr=0;   /* start of the current line in fieldbuffer */
+d76 16
+a91 12
+ if (intag) { 
+  if (ch==':') { 
+    intag=0;
+    tagname[tagptr]=0;
+/*    printf("Found end of tag - tag is %s\n",tagname); */ 
+    bufptr=0;
+    HasEndLabel=0;
+    linestartptr=0;
+    if (strcmp(tagname,Endlabel)==0) {
+         /* tidy up our current tagrecord structure */
+         if (current != 0) current->next=0;
+         return first;
+d93 5
+a97 16
+
+   /* The character after a tag and colon should be either a space or
+      another colon - if it is another colon then we need to read in
+      an endlabel */
+   ch=fgetc(f); 
+   if (ch==':') { 
+      ch=fgetc(f);          /* throw away first character which should be
+			       a leading space on the label */
+      for(labelptr=0 ; labelptr<=128 ; labelptr++) {
+         ch=fgetc(f);
+         if (ch=='\n') { endlabel[labelptr]=0 ; break;}
+            else { endlabel[labelptr]=ch ; } ; 
+         } 
+/*        printf("Found end of label - label is %s\n",endlabel); */
+        HasEndLabel=1;
+       }
+a98 3
+  else if (isspace(ch)) ;       /* dont do anything - throw away spaces in tags */
+  else {
+   tagname[tagptr]=ch;
+d105 1
+a105 1
+   
+d107 13
+a119 10
+   }
+ }
+ else /* not in tag */
+ {
+ /* put the character into the buffer */
+ if (ch=='\n') {
+       if (! HasEndLabel) {
+       intag=1 ; tagptr=0;
+       fieldbuffer[bufptr]=0;
+/*       printf("Field value is %s\n",fieldbuffer);  */
+d131 5
+d137 22
+a158 13
+       else {
+      /* we need to compare the line we are on with the end label */
+
+	/* first make sure we have a trailing null on the fieldbuffer */
+	fieldbuffer[bufptr] =0;
+      
+/*      printf("Compare fieldbuffer %s with label %s\n",fieldbuffer+linestartptr,endlabel); */
+      if (strcmp(fieldbuffer+linestartptr,endlabel)==0) {
+             /* end of multiple lines of info */
+             /* subtract the length of the end label */
+             fieldbuffer[bufptr-strlen(endlabel)]=0;
+/*          printf("Field value is %s\n",fieldbuffer); */
+            intag=1 ; tagptr=0;
+d166 73
+d243 21
+a263 7
+            }
+            else {
+            linestartptr=bufptr+1;
+            fieldbuffer[bufptr]=ch;
+            bufptr++;
+            }
+      }
+d265 6
+a270 6
+   else
+   {
+  fieldbuffer[bufptr]=ch;
+  bufptr++; 
+  }
+ }
+d274 1
+d276 1
+a276 2
+} 
+
+d281 1
+d286 1
+d299 1
+a299 1
+fprintf(f,"End:\n");
+@

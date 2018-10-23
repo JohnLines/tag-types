@@ -1,0 +1,46 @@
+./" Manual page for tag2tab
+.TH tag2tab 1 "June 7, 1998"
+.SH NAME
+tag2tab \- Convert a tab seperated file into a tag file
+.SH SYNOPSIS
+.B tag2tab
+.B [\-t fieldname...]
+.B [-D]
+.B [-h]
+
+.SH DESCRIPTION
+tag2tab takes a tag format file on standard input, and outputs those fields
+specified on the command line, separated by tab characters.
+
+.SH OPTIONS
+.TP
+.B \-h
+Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will not be output to
+the tabbed file.
+.TP
+.B \-m
+Mime flag - output the names of the fields from the command line as the first
+line of the output file. This produces a file in the format of the Mime
+text/tab-separated-values file type.
+.TP
+.B \-t fieldname...
+Specifies the names of the fields from the tagged file which are to be
+output.
+.TP
+.B \-D
+Take the list of fields from the descriptor for the tag file.
+Note that this conflicts with -h as the tag file must have a header in order
+to locate the descriptor file.
+
+Either
+.B -t fieldname...
+or
+.B -D
+must be specified to obtain interesting output.
+
+.SH SEE ALSO
+tab2tag(1), tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+

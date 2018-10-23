@@ -1,0 +1,64 @@
+./" Manual page for tag2html
+.TH tag2html 1 "June 9, 1998
+.SH NAME
+tag2html \- convert a tag file to html
+.SH SYNOPSIS
+.B tag2html
+.B [-h]
+.B [-H]
+.B [-t tagname1 tagname2 ...]
+.B [-l literal ...]
+.B [-u tagname3]
+
+.SH DESCRIPTION
+tag2html takes in a tag file on stdin and produces html on stdout.
+By default it produces output as a series of definition lists, one for
+each record. It can also produce a table format.
+
+.SH OPTIONS
+.TP
+.B \-h
+Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will not be output
+.TP
+.B \-t tagname1 ...
+Produce an html table, using the tagnames given as
+the columns, with their values in successive tag records as the data in
+the table rows
+
+.TP
+.B \-l literal
+Implies table mode. Writes a literal value in that table column.
+The dollar sign ($) is a special character, with the following meanings
+ $n - insert the current record number
+ $v fieldname: - insert the value of that field
+ $$ - insert a dollar sign
+
+.TP
+.B \-u tagname...
+The value of the field is assumed to be a valid URL
+and is written out as an active link. Works in table or list mode.
+.TP
+.B \-T t_header1 ...
+Label the table columns with the headers given,
+rather than the default of using the tag labels - only useful in table mode
+.B \-o options
+Insert the options text into the html TABLE tag
+
+.SH EXAMPLES
+The literal field value can be useful when calling tag2html from a cgi script,
+in order to pass control back to the script, for example
+ -l '<a href=/cgi-bin/scriptname/someaction/$vPrimary:>'
+This could be used for a script called
+.B scriptname
+acting on a tag
+file with a primary field called
+.B Primary
+ - the whole string from
+the dollar sign to the colon is replaced by the value of that field.
+
+.SH SEE ALSO
+tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+

@@ -1,0 +1,34 @@
+./" Manual page for tab2tag
+.TH tab2tag 1 "June 7, 1998"
+.SH NAME
+tab2tag \- Convert a tab seperated file into a tag file
+.SH SYNOPSIS
+.B tab2tag
+.B \-t fieldname...
+.P
+.B tab2tag
+.B \-m
+
+.SH DESCRIPTION
+tab2tag takes a tab separated file on standard input, and outputs those fields
+specified on the command line as a tag file.
+
+If the characters \\t or \\n occur in the tabbed input then they are converted
+into real tabs and newlines in the tag format output file.
+
+.SH OPTIONS
+
+.TP
+.B \-m
+Mime flag - the input tab file is in the format of the text/tab-separated-values
+MIME type. The first record in the tab file is the field names used in the
+data.
+
+.SH SEE ALSO
+tag2tab(1), tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+
+.SH BUGS
+Does not deal with the cases where the number of fieldnames given on the
+command line does not match the number of fields in the tab separated file.

@@ -1,0 +1,32 @@
+./" Manual page for tagshow
+.TH tagshow 1 "July 19, 1998"
+.SH NAME
+tagshow \- show selected fields from a tag file
+.SH SYNOPSIS
+.B tagshow
+.B [-h]
+.B [-t fieldname]
+.B [tagfile]
+.B [outputfile]
+
+.SH DESCRIPTION
+tagshow displays selected fields from a tag file. It can also display total
+quantities of numeric fields.
+
+.SH OPTIONS
+.TP
+.B \-h
+Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will not be output
+.TP
+.B \-t fieldname
+Display the total of the values of the fields with name 'fieldname'
+
+.SH SEE ALSO
+tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+
+.SH BUGS
+At present only the displaying total values of a given field function is implemented.
+

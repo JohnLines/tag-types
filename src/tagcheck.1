@@ -1,0 +1,44 @@
+./" Manual page for tagcheck
+.TH tagcheck 1 "September 23, 1998"
+.SH NAME
+tagcheck \- Check a tagged file for consistency with its descriptor
+.SH SYNOPSIS
+.B tagcheck
+.B filename...
+
+.SH DESCRIPTION
+Tagcheck tests a tagged file, first opening the corresponding descriptor
+file. This is found by identifying the type of the tagged file, which
+will be found between Tag- and -version in the first line of the file.
+The descriptor file is found by searching on the descriptor files path
+for a file with the name of the tag file type, and a suffix of
+.B .dsc
+
+The descriptor file search path is /usr/local/lib/tag/dsc:/usr/lib/tag/dsc/:.
+
+If the descriptor file can not be read then the checks which can be made
+on the file are limited to the following:
+
+The value on the
+.B End:
+tag (if present) is checked against the value of the first tag, and an error
+reported if they do not match - for example
+ Id: one
+ Label1: value1
+ End: two
+
+would be reported as an error.
+
+If the descriptor file can be read then the following checks are made:
+
+Any tagnames which are not mentioned in the descriptor are reported.
+
+
+
+
+.SH SEE ALSO
+tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+
+

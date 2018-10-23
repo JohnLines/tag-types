@@ -1,0 +1,281 @@
+head	1.1;
+access;
+symbols;
+locks
+	john:1.1; strict;
+comment	@ * @;
+
+
+1.1
+date	98.02.07.14.58.57;	author john;	state Exp;
+branches;
+next	;
+
+
+desc
+@Tagextract, slightly after the 0.0.5 release
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/*
+	tagextract - extract tag records which match the criteria
+	given on the command line from stdin and write them to stdout.
+
+	Note that if we cant work out what the which is the primary
+	tag, and the first record does not meet the criteria then
+	we may lose the headers.
+
+
+Note that this is ALPHA software, developed piecemeal while I
+was testing various ideas.
+
+
+Released under the GNU Copyright.
+
+        Author: John Lines <john@@paladin.demon.co.uk>
+
+
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <ctype.h>
+#include <string.h>
+
+#include "tagtypes.h"
+
+#define MAXCONDS 5		/* Maximum number of conditions */
+#define CONDNAMELEN 40		/* Max length of a fieldname in a condition */
+#define CONDVALLEN 40		/* Max length of a field value in a condition */
+
+struct condition {
+  char fieldname[CONDNAMELEN];
+  char value[CONDVALLEN];
+  char op;
+}; 
+
+/*
+	Supported values of op
+	=	Numerically equal
+	E	String equal
+
+*/
+
+ int recbufsize=10000;        /* Size of a record buffer */
+ int debug=0;
+ int invert=0;
+ int doheader=1;
+ int startrecord=-1;         /* start looking at records starting here */
+ int stoprecord=-1;
+ FILE *infile=stdin;
+ FILE *outfile=stdout;
+
+int parseargs(int argc,char *argv[], struct condition conditions[MAXCONDS]);
+int matchcond(struct tagrecord *record,struct condition conditions[]);
+
+void main(int argc, char *argv[]) {
+
+ struct condition conditions[MAXCONDS];
+ struct tagrecord *record;
+ char *fieldbuffer;
+ int recordnumber=0;
+
+if (parseargs(argc,argv,conditions)) return;
+
+fieldbuffer=malloc(recbufsize);
+
+if (doheader) {
+    record=gettagrec(infile,fieldbuffer);
+    puttagrec(outfile,record);
+    } else  recordnumber++ ; 		/* first 'real' record is always 1 */
+
+
+while (!feof(infile)) {
+  record=gettagrec(infile,fieldbuffer);
+  recordnumber++;
+  if (debug) fprintf(stderr,"Testing record %d\n",recordnumber);
+  if ((startrecord <0) || (recordnumber>= startrecord)) {
+    if (debug) fprintf(stderr,"Record OK on start recordnumber\n");
+     if ((stoprecord <0) || (recordnumber <=stoprecord))  {
+    if (debug) fprintf(stderr,"Record OK on stop recordnumber\n");
+  if (matchcond(record,conditions)^invert) puttagrec(outfile,record);
+  }
+  }
+/*   recordnumber++; */
+}
+}
+
+int parseargs(int argc,char *argv[], struct condition conditions[MAXCONDS])
+{
+ int i;
+ int arg=1;
+ int cond=0;
+ for (i=0;i<MAXCONDS ; i++) conditions[i].op = 0;
+/*  puts("condition ops set\n"); */
+
+/* look for flags */
+
+while ((arg<argc) && (argv[arg][0]=='-')) {
+ switch (argv[arg][1]) {
+case 'v':
+  invert=1;
+  if (debug) fprintf(stderr,"Invert set\n");
+  break;
+case 'h':
+  doheader=0; break;
+case 'd':
+  debug=1; break;
+case 'n':
+  if (debug) fprintf(stderr,"Numeric select\n");
+  arg++;
+  conditions[0].op='A';
+  startrecord=strtol(argv[arg],NULL,10); 
+  stoprecord=startrecord;
+  break;
+case 'm':
+  if (debug) fprintf(stderr,"Match conditions flag seen\n");
+arg++;
+/* while (arg<argc) { */
+ strncpy(conditions[cond].fieldname,argv[arg],CONDNAMELEN); arg++;
+ if (arg>=argc) {
+     fprintf(stderr,"Error - operator expected\n"); return 1;
+     }
+ if (strcmp(argv[arg],"-eq")==0) conditions[cond].op='E';
+ else if (strcmp(argv[arg],"==")==0) conditions[cond].op='=';
+  else if (strcmp(argv[arg],"-gt")==0) conditions[cond].op='>';
+  else if (strcmp(argv[arg],"-lt")==0) conditions[cond].op='<';
+  else if (strcmp(argv[arg],"-contains")==0) conditions[cond].op='C';
+  else if (strcmp(argv[arg],"-exists")==0) conditions[cond].op='X';
+  else if (strcmp(argv[arg],"-before")==0) conditions[cond].op='B';
+  else {
+     printf("Unknown condition operator %s\n",argv[arg]);
+     }
+ if (debug) fprintf(stderr,"Conditions operator is %s\n",argv[arg]);
+ if (conditions[cond].op!='X') {
+ arg++;
+ if (arg>=argc) {
+     fprintf(stderr,"Error - value expected\n"); return 1;
+     }
+}
+  strncpy(conditions[cond].value,argv[arg],CONDVALLEN); arg++;
+ if ((conditions[cond].op=='=')||(conditions[cond].op=='>')) {
+   /* The argument to these operators should be an integer */
+ for (i=0 ; i<strlen(conditions[cond].value) ; i++) {
+   if (!isdigit(conditions[cond].value[i])) {
+      fprintf(stderr,"Error - argument must be an integer\n"); return 1;
+      }
+   } 
+
+
+  }
+
+/* } */
+break;
+default:
+  fprintf(stderr,"Tagextract - unknown switch %c\n",argv[arg][1]);
+}
+arg++;
+}
+/* after the switches we should have an input file and an output file, if supplied */
+
+if (arg<argc) {
+  if (debug) fprintf(stderr,"Opening input file %s\n",argv[arg]);
+  if ((infile=fopen(argv[arg],"r"))==NULL) {
+       fprintf(stderr,"Error opening %s for input\n",argv[arg]);
+       exit(0);
+       }
+
+  arg++;
+  }
+
+if (arg<argc) {
+  if (debug) fprintf(stderr,"Opening output file %s\n",argv[arg]);
+  if ((outfile=fopen(argv[arg],"w"))==NULL) {
+	fprintf(stderr,"Error opening %s for output\n",argv[arg]);
+	exit(0);
+	}
+  arg++;
+  }
+return 0;
+}
+
+
+int matchcond(struct tagrecord *record,struct condition conditions[])
+{
+struct tagrecord *current;
+int fieldval,condval;
+
+
+current=record;
+while(current!=0) {
+
+if (debug) {
+ fprintf(stderr,"Comparing field name %s value %s with %s value %s\n",
+    current->tagname,current->value,conditions[0].fieldname,
+    conditions[0].value);
+    }
+
+ condval=strtol(conditions[0].value,NULL,10);
+ fieldval=strtol(current->value,NULL,10);
+if (debug)  fprintf(stderr,"condition value %d - field value %d\n",condval,fieldval);
+ switch(conditions[0].op) {
+ case '\0':
+      break;    /* i.e. no comparison operator */
+ case 'A':
+		/* always matches */
+	return 1;
+	break;
+ case 'N':
+		/* never match */
+	return 0;
+	break;
+ case 'E':
+ if ((strcmp(current->tagname,conditions[0].fieldname)==0) && 
+       (strcmp(current->value,conditions[0].value)==0)) return 1; 
+	break;
+ case '=':
+ if ((strcmp(current->tagname,conditions[0].fieldname)==0) &&
+       (condval==fieldval)) return 1;
+	break;
+ case '>':
+ if ((strcmp(current->tagname,conditions[0].fieldname)==0) &&
+       (fieldval > condval)) return 1;
+	break;
+ case '<':
+ if ((strcmp(current->tagname,conditions[0].fieldname)==0) &&
+       (fieldval < condval)) return 1;
+	break;
+ case 'C':
+ if ((strcmp(current->tagname,conditions[0].fieldname)==0) &&
+	(strstr(current->value,conditions[0].value)!=0)) return 1;
+	break;
+ case 'B':
+ if ((strcmp(current->tagname,conditions[0].fieldname)==0) && 
+       (strcmp(current->value,conditions[0].value)==0)) {
+	   conditions[0].op='N';
+           return 1; 
+           }
+	break;
+ case 'X':
+ if (strcmp(current->tagname,conditions[0].fieldname)==0) return 1;
+        break;
+  default:
+     printf("Error - invalid comparison operator\n");
+ }
+
+
+  current=current->next;
+ }
+return 0;
+}
+
+@

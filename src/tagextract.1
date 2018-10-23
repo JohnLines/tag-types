@@ -1,0 +1,89 @@
+.\" Manual page for tagextract
+.TH tagextract 1 "June 7, 1998"
+.SH NAME
+tagextract \- extract matching records from a tag file
+.SH SYNOPSIS
+.B tagextract
+.B [-h]
+.B [-v]
+.B [-n number]
+.B [-m [fieldname op [fieldvalue]]
+.B [infile]
+.B [outfile]
+
+.SH DESCRIPTION
+tagextract processes a tag stream on its standard input, looking for
+records which match the conditions required by the fieldname, operator
+and usually fieldvalue arguments.
+.SH OPTIONS
+.TP
+.B \-h
+Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will always be output
+intact as the new header record.
+.TP
+.B \-v
+Invert the sense of matching, to output all the lines which do
+NOT match the conditions.
+.TP
+.B \-d
+Print debugging information to stderr
+.TP
+.B \-n
+Output the record which is this number of records into the tag file
+later versions may expand this to select a range. Record 0 is the header.
+.TP
+.B \-m fieldname op [fieldvalue]
+Output records if they match the condition test specified by
+.I op
+.PP
+The test operators are
+.TP
+.I -eq
+String equals
+.TP
+.I ==
+Numerically equal (like Perl)
+.TP
+.I -gt
+Numerically greater than (unlike Perl)
+.TP
+.I -lt
+Numerically less than (unlike Perl)
+.TP
+.I -contains
+Contains (note currently case sensitive !!!)
+.TP
+.I -exists
+True if the field exists in the record - does not take a value
+.TP
+.I -before
+True if the field with the given value has not yet been reached
+.TP
+.I -earlier
+The field being tested must contain a date in ISO format - true if the
+field value is earlier than the value given on the command line.
+.TP
+.I -later
+True if a date in ISO format is later than the given date.
+
+
+.SH EXAMPLES
+The following will extract all the records where the date is later than the
+first of September 1994
+ tagextract -m Date -later 1994-09-01
+
+
+.SH SEE ALSO
+tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+
+
+
+
+
+
+
+
+

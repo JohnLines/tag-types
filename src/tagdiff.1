@@ -1,0 +1,45 @@
+./" Manual page for tagdiff
+.TH tagdiff 1 "September 29, 1998
+.SH NAME
+tagdiff \- Find the differences between two tagged files
+.SH SYNOPSIS
+.B tagdiff
+.B filename1 filename 2
+
+.SH DESCRIPTION
+tagdiff finds the difference between two tagged files, taking advantage of
+its knowledge of the structure of the files to produce an output which is
+more relevant to tagged operations than standard diff.
+
+The format of the output file looks like:
+
+.I New record
++Id: 1234
++Tag1: value1
++Tag2: newvalue2
+End:
+
+.I Changed record
+Id: 2345
+-Tag1: value1
++Tag1: value2
+End:
+
+.I New field in existing record
+
+Id: 3456
++Tag1: value1
+End:
+
+.I Deleted record
+-Id: 1234
+-Tag1: value1
+-Tag2: value2
+End:
+
+
+.SH SEE ALSO
+tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+

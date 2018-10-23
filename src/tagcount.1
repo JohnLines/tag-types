@@ -1,0 +1,58 @@
+./" Manual page for tagcount
+.TH tagcount 1 "June 8, 1998"
+.SH NAME
+tagcount \- count things in a tag file
+.SH SYNOPSIS
+.B tagcount
+.B [-h]
+.B [-r]
+.B [-f fieldname]
+.B [-x]
+.B [-v fieldname value]
+.B [-a]
+.B [tagfile]
+.B [outputfile]
+
+.SH DESCRIPTION
+tagcount counts the number of records, or fields in a tag file.
+
+.SH OPTIONS
+.TP
+.B \-h
+Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will not be output
+.TP
+.B \-r
+Count records
+.TP
+.B \-f fieldname
+How often does the given field occur
+.TP
+.B \-x
+Modifier for -f, how often does the field NOT occur
+.TP
+.B \-v fieldname value
+How often does the field occur with a given value
+.TP
+.B \-a
+All - show all the fields which occur in the file, together with
+how often they occur.
+
+.PP
+If more than one modifier is specified then the results are output in
+the order
+ number of records
+ number of fields
+ field display
+
+.SH SEE ALSO
+tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+
+.SH BUGS
+The -f flag can only be specified once (or more accurately only the last
+occurance is used)
+.PP
+-x and -a are not yet implemented
+

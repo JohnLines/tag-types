@@ -1,0 +1,39 @@
+<title>Tagcount - count things in a tag file</title>
+
+<h2>Syntax</h2>
+
+<pre>
+	tagcount [-h][-r][-f fieldname][-v fieldname value][-a][tagfile][outputfile]
+
+</pre>
+
+<h2>Description</h2>
+tagcount counts the number of records, or fields in a tag file.
+
+<h3>Modifier flags</h3>
+<dl>
+<dt>-h<dd>Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will not be output
+<dt>-r<dd>Count records
+<dt>-f fieldname<dd>How often does the given field occur
+<dt>-x<dd>Modifier for -f, how often does the field NOT occur
+<dt>-v fieldname value<dd>How often does the field occur with a given value
+<dt>-a<dd>All - show all the fields which occur in the file, together with
+how often they occur.
+
+</dl>
+
+If more than one modifier is specified then the results are output in
+the order
+<pre>
+number of records
+number of fields
+field display
+</pre>
+
+<h2>Bugs</h2>
+The -f flag can only be specified once (or more accurately only the last
+occurance is used)
+
+<p>
+-x and -a are not yet implemented

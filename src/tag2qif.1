@@ -1,0 +1,29 @@
+./" Manual page for tag2qif
+.TH tag2qif 1 "July 18, 1998"
+.SH NAME
+tag2qif \- Convert a tag-fintrans file into a Quicken Interchange File (qif)
+.SH SYNOPSIS
+.B tag2qif
+.B [-h]
+
+.SH DESCRIPTION
+tag2qif takes a tag formatted financial transaction file on standard input
+and outputs is in Quicken Interchange Format on standard output.
+
+Note that the tagged financial transaction format is described in
+ http://www.paladin.demon.co.uk/tag-types/dsc/fintrans.dsc
+
+There are constructs in the tag-fintrans format which can not be expressed
+in QIF, for example multi-line descriptions.
+.SH OPTIONS
+.TP
+.B \-h
+Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will not be output to
+the tabbed file.
+
+.SH SEE ALSO
+qif2tag(1), tagprogs(1), tag(5)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+

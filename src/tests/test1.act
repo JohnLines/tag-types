@@ -1,0 +1,59 @@
+Tag-action-version: 1.0
+End:
+
+Id: test.1
+Title: test actions with a description
+Status: Done
+Priority: 50
+Description:: END_D
+Here is a multiline description
+line 2
+END_D
+End:
+
+Id: test.2
+Title: has empty multiline description
+Description:: END_D
+END_D
+End:
+
+Id: test.2.1
+Description:: END_D
+Here is a normal description - to act as a backstop for the test.2
+description
+END_D
+End:
+
+Id: test.3
+Title: multiline description, just blank lines
+Description:: END_D
+
+
+
+
+END_D
+End:
+
+Id: test.4
+Title: another 'normal' multline description
+Description:: xxyyz
+This one does not use END_D as a delimiter
+END_D
+See what I mean
+xxyyz
+End:
+
+Id: test.5
+Title: trick ending
+Description:: END_D
+END_not really
+END_D should not stop here because it is not alone on the line
+but this is
+END_D
+End:
+
+Id: test.6
+Title: Tabs in description
+Description: Single line description with a	tab just before the word 'tab'
+End:
+

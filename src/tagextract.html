@@ -1,0 +1,46 @@
+<title>Tagextract - extract matching records from a tag file</title>
+
+<h2>Syntax</h2>
+
+<pre>
+	tagextract [-h][-v][-n number ][-m [ fieldname op [fieldvalue]]]...
+        [infile][outfile]
+
+</pre>
+
+<h2>Description</h2>
+tagextract processes a tag stream on its standard input, looking for
+records which match the conditions required by the fieldname, operator
+and usually fieldvalue arguments.
+
+
+<h3>Modifier flags</h3>
+<dl>
+<dt>-h<dd>Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will always be output
+intact as the new header record.
+<dt>-v<dd>Invert the sense of matching, to output all the lines which do
+NOT match the conditions.
+<dt>-d<dd>Print debugging information to stderr
+<dt>-n<dd>Output the record which is this number of records into the tag file
+later versions may expand this to select a range. Record 0 is the header.
+
+</dl>
+
+<h3>Conditions</h3>
+Most condition tests are of the form
+<pre>
+	fieldname operator value
+</pre>
+but some do not require the value.  
+The operators are
+<dl>
+<dt>-eq<dd>String equals
+<dt>==<dd>Numerically equal (like in Perl)
+<dt>-gt<dd>Numerically greater than (unlike Perl)
+<dt>-lt<dd>Numerically less than (unlike Perl)
+<dt>-contains<dd>Contains
+<dt>-exists<dd>True if the field exists in the record - does not take a value
+<dt>-before<dd>True if the field with the given value has not yet been reached
+</dl>
+

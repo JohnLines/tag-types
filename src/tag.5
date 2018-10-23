@@ -1,0 +1,83 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH tag 5 "June 7, 1998"
+.SH NAME
+tag - Generic tagged file format
+.SH SYNOPSIS
+.IB filename .tag
+.SH DESCRIPTION
+The
+.B .tag
+format is a generic catchall for many types of data which can be described
+as a series of tags.
+
+.SH FORMAT
+Tagged files consist of a number of records, each record being composed of
+a set of data items, which are labeled with a tag.
+.PP
+There is one reserved tag name, which is 'End', which is always the last
+tag in a record.
+.PP
+All
+.B .tag
+files start with a header record, the first line of which identifies the type of
+tag file.
+It is always of the form
+Tag-
+.I something
+-version:
+.I versionnumber
+
+.PP
+The rest of the header record can be any other tags as required.
+
+.SH EXAMPLE
+ Tag-carlog-version: 1.0
+ Description:: END_D
+ This file provides a convenient place to put information
+ about events in the life of a car, such as when they got
+ filled up with petrol (or gas if you prefer), and when they
+ were serviced.
+ END_D
+ Vehicle: Ferrari
+ End:
+ Odometer: 23097
+ Type: Fuel
+ Fuel: 38.56
+ Cost: 22.33
+ Where: Lands End
+ Date: 1-Apr-1998
+ Comments: Strange wailing from behind at 100, dies away at 150
+ End:
+ Odometer: 23274
+ Type: Service
+ Date: 2-Apr-1998
+ Description:: END_D
+ Took car into dealer, complained about noise, they
+ stripped the engine down but couldnt find anything
+ END_D
+ Cost: 500
+ End:
+ Odometer: 23285
+ Type: Fuel
+ Fuel: 36.22
+ Cost: 21.48
+ Date: 3-Apr-1998
+ End:
+ Odometer: 23320
+ Date: 4-Apr-1998
+ Type: Misc
+ Comments: Speeding fine
+ Cost: 100
+ End:
+
+.SH SEE ALSO
+tagprogs(1)
+.SH AUTHOR
+John Lines (john@paladin.demon.co.uk)
+
+
+.SH BUGS
+This manpage is still very sketchy.
+.PP
+The format is intentionally less complex than, for example, SGML - this is
+also a feature.

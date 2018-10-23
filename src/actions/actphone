@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+#	actphone number|person 'text'
+#
+#	Script to make an action record as a reminder to phone someone
+#
+#	Note that this version assumes that the phone actions file has
+#	already been created and has some actions in it.
+#
+action_dir=`grep tag-actions-dir: ~/.tagdefaults | cut -d' ' -f2`
+echo action_dir is $action_dir
+
+phone_file=$action_dir/phone.act
+phone_file=~/projects/tag-types/actions/phone.act
+
+echo "" >>$phone_file
+
+phone_id=`grep Id: $phone_file | wc -l`
+phone_id=`echo $phone_id + 1 | bc`
+
+echo phone_id is $phone_id
+
+echo "Id: phone.$phone_id" >>$phone_file
+echo "Description: Call $1 about $2" >>$phone_file
+now=`date`
+echo "Date: $now" >>$phone_file
+echo "Status: " >>$phone_file
+echo "End:" >>$phone_file
+
+

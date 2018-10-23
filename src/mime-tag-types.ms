@@ -153,4 +153,4 @@ OX2 0LY
 
 Phone: +44 1865 721294
 
-Email: john@paladin.demon.co.uk
+Email: john+tag-mime-type@paladyn.org

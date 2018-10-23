@@ -1,0 +1,180 @@
+
+
+
+
+
+
+Network Working Group                                           J. Lines
+Request for Comments: xxxx
+                                                            1 March 1996
+
+
+       A MIME content type for 'tagged' partially structured data
+
+Status of this Memo
+
+   This memo describes an experimental protocol for the Internet commu-
+   nity.  Discussion and suggestions for improvement are welcomed.  Dis-
+   tribution of this memo is unlimited.
+
+Overview and Rationale
+
+   The existing MIME content types provide for the transfer of informa-
+   tion intended to be read by a human being, or viewed as an image, or
+   played as a sound, and while information targeted at a specific
+   application is conveyed by the application types.
+
+   This document describes a system for organising information as a
+   series of groups of records where each record consists of an identi-
+   fying tag, followed by the data for that record. This document does
+   not describe the valid tag values, but provides an overall framework
+   for creation of different tag types.
+
+   There are many pieces of information which are carried around the
+   Internet at present which are often manually entered into applica-
+   tions due to the absence of standard ways of exchanging such informa-
+   tion in an application-neutral way.
+
+   For example if I am part of a group of Sun users who wish to be
+   informed that a meeting will take place at some particular time then
+   a specially formatted mail message will enable recipients of the mes-
+   sage to put the information directly into Sun calendar manager.  Many
+   LAN based mail systems have similar facilities, provided everyone is
+   using the same set of products.
+
+   At present information about events is available across the Internet
+   in mailing lists, News groups and Web pages but has to be transposed
+   by hand into electronic diaries.
+
+   Similarly a MIME type to describe the actions put on the attendees of
+   a meeting which could be attached to the minutes and read into their
+   todo lists would save much unnecessary retyping.
+
+   Events, actions and much more can be exchanged using the tag type
+   system described below.
+
+
+
+Lines                                                   FORMFEED[Page 1]
+
+
+
+
+
+RFC xxxx                    The Tag MIME type               1 March 1996
+
+
+Design considerations
+
+   In order to be useful across the wide range of systems used on the
+   Internet the information within a tagged type should be comprehensi-
+   ble to someone with no specialised reader software, in much the same
+   way as a MIME text/plain message does not require a specialised mail
+   reader.
+
+   It should be possible to create the information with a normal text
+   editor so that specialist software is not required for creating
+   information.
+
+   There should be few restrictions on the actual data which may be
+   transfered.  In particular it is desireable to be able to preserve
+   the formatting of a block of text, rather than have it treated as a
+   string of words.
+
+
+
+Tag stream format
+
+   A tag stream looks like a series of items of the form
+   Tagname: value
+   or
+   Tagname:: End_label
+   several lines
+   of text
+   End_label
+
+   In the first format the data associated with the tag is the contents of
+   the line following the colon, except that a single leading space is
+   not considered part of the data. (For particular applications leading
+   spaces may not be important in any case).
+
+   In the second format the data is all the lines down to, but not including
+   the End_label. Any non-whitespace printable ASCII string may be used for
+   the End_label, but the use of a single period is not recommended.
+
+   The first tag in the file will be of the form
+   Tag-tagtype-version: n.nn
+
+
+
+Tag type registration
+
+   The formal description of a particular tag type is contained in a file
+   which is itself in tag format. The MIME type tag/dsc is used to exchange
+   tag file descriptors. New tag descriptions or updated versions should be
+
+
+
+Lines                                                   FORMFEED[Page 2]
+
+
+
+
+
+RFC xxxx                    The Tag MIME type               1 March 1996
+
+
+   registered according to the procedures described in RFC1590.
+
+
+Discussion
+
+   The machine readable definition of tag types enables suites of programs
+   to be created which can process tag streams without needing to understand
+   the specific application they are used for. They can be used to filter
+   attachments before they are fed into an application, or presented to the
+   reader.
+
+Security Considerations
+
+   The ability to exchange data between applications through an open specification
+   should improve security overall.
+
+   Where any tag type contains data which may carry its own security risks
+   that should be discussed in the information which relates to the particular
+   tag type.
+
+
+Author's Address
+
+   John Lines
+   52, North Hinksey Lane,
+   Oxford,
+   OX2 0LY
+
+   Phone: +44 1865 988379
+
+   Email: john+tag-mime-type@paladyn.org
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lines                                                   FORMFEED[Page 3]
+
+

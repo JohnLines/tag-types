@@ -1,0 +1,92 @@
+<title>Tag types software change history</title>
+
+<h1>Tag types software change history</h1>
+
+<h2>Version 0.0.10</h2>
+
+<ul>
+<li>tab2tag - ability to add primary tags and tag headers to the generated
+tag file
+<li>tab2tag - can use a character other than TAB as the separator (-s switch)
+<li>qif2tag - generates a header tag by default.
+<li>tagshow - implemented -f, -x and -v options to display fields selectively
+<li>tagcheck - added checks for the ValueType of records (at present the only
+ check implemented is for Integer)
+<li>tagextract - additional comparison operator -cbcontains - does a case blind
+ contains (only supported on systems with strcasestr in their strings library)
+
+
+
+</ul>
+
+
+<h2>Version 0.0.9</h2>
+<ul>
+<li>tagextract - bugfix for earlier and later checks
+<li>tagshow - Limit the displayed precision for a total to the max precision seen in the input.
+<li>all - changes to work with glibc 2.1 (make all programs thread safe), also change all 'void main' to 'int main'
+<li>taglib - new routines opentagfile and closetagfile, plus all utilities updated to use the new routines (preparing for indexes)
+<li>taglib - error reporting for structural errors in the file done through
+ an error variable in the tagfile structure, all utilities updated to check this.
+<li>taglib - fix boundary condition to report properly the tagname greater than 127 characters error
+
+</ul>
+ 
+
+<h2>Version 0.0.8</h2>
+<ul>
+<li>tag2tab -D switch to read a descriptor file to get the list of fields to output
+<li>tag2tab - output tabs and newlines in field values as \t and \n respectively
+<li>tag2tag - convert \t and \n in tabbed files into real tabs and multiline fields.
+<li>tagcheck - new program, check a tag file for consistency with its descriptor
+<li>tagdiff - new program - find the differences between two tagged files
+
+
+</ul>
+
+<h2>Version 0.0.7</h2>
+<ul>
+<li>tag2tab and tab2tag - new -m switch allows them to read and write tab files
+in the Mime text/tab-separated-values format.
+<li>tag2qif - new program, convert a tag file to Quicken Interchange Format
+<li>qif2tag - new program, convert a QIF file to tag format.
+<li>man pages for the tag programs
+<li>tagextract - new condition tests, earlier and later; do selection where fields are in ISO date format
+</ul>
+
+
+<h2>Version 0.0.6</h2>
+<ul>
+<li>tag2html - new -l and -u switches for table mode, display literal and url fields, useful
+for CGI scripts
+<li>taglib - new routine taggetvalue, gets a value for a field from a tag record.
+<li>tagextract - Fix off by one bug in parseargs.
+<li>all - security fix -  use strncpy in argument parsing routines.
+<li>taglib - new routine freetagrec,frees a tag record
+</ul>
+
+
+<h2>Version 0.0.5</h2>
+<ul>
+<li>Tagshow - new program, initially only sums a floating point field throughout a tag file
+<li>Tagcount - new program, counts things in a tag file
+</ul>
+
+<h2>Version 0.0.4</h2>
+<ul>
+<li>Tagextract - Command line changes, add new -m switch to indicate conditions to match
+<li>Tagextract - now takes input and output files on the command line
+<li>taglib - fixed a bug in handling the Tag: space newline combination
+<li>Tagextract - takes -n number argument to specify a single tag record
+<li>Tagextract - the string equality and numeric equality operators have been
+switched round to match Perl (and the numeric operator equality test is now ==)
+
+</ul>
+
+<h2>Version 0.0.3</h2>
+<ul>
+<li>New programs - tag2tab and tab2tag, convert to and from tag seperated
+<li>actions cgi script has new actions-site.pl file, isolate the site dependent parts.
+<li>bug fix - tag2html, now parses the -o table options switch.
+</ul>
+

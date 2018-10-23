@@ -1,0 +1,133 @@
+<head>
+<title>MIME Tag types home page</title>
+<meta name="description" content="This page describes a format for storing and
+transmitting tagged data. The format is a registered MIME type and utility
+programs are available to manipulate its files on disk">
+<meta name="keywords" content="tag tagged data format standard mime interchange utility unix linux free opensource">
+
+
+</head>
+<body>
+<h1>MIME Tag types home page</h1>
+
+<h1>Introduction</h1>
+
+This page contains the information about a  MIME type
+for exchanging data between some types of application in such a way that the information
+is also useful for people who are not using an application which
+understands the new type.
+<p>
+The format is intended to deal with sending a number of elements where each
+element has common attributes - possible applications include 
+descriptions of books, financial transactions, recipies etc.
+Many of these things are exchanged in tag-like formats already, but all would
+benefit from using the same overall structure. Different applications can
+use different fields but there are core applications which can operate
+on any tagged type.
+<p>
+Thus we can take advantage of common functions across tagged types, for
+example project management systems have topological dependancies on actions
+which are very similar to the topological dependancies in a package management
+system.
+<p>
+Whew - that all sounds very complicated, but in fact it is very simple - an
+example may help
+
+<pre>
+Tag-vehiclelog-version: 1.0
+Description:: END_D
+This file provides a convenient place to put information about events in the
+life of a car, such as when they got filled up with petrol (or gas if you
+prefer), and when they were serviced.
+END_D
+Vehicle: Ferrari
+End:
+Odometer: 23097
+Type: Fuel
+Fuel: 38.56
+Cost: 22.33
+Where: Lands End
+Date: 1-Apr-1998
+Comments: Strange wailing from behind at 100, dies away at 150
+End:
+Odometer: 23274
+Type: Service
+Date: 2-Apr-1998
+Description:: END_D
+Took car into dealer, complained about noise, they stripped
+the engine down but couldnt find anything
+END_D
+Cost: 500
+End:
+Odometer: 23285
+Type: Fuel
+Fuel: 36.22
+Cost: 21.48
+Date: 3-Apr-1998
+End:
+Odometer: 23320
+Date: 4-Apr-1998
+Type: Misc
+Comments: Speeding fine
+Cost: 100
+End:
+
+</pre>
+We can pass a file in this format to a person, and they will be able to
+understand what it means, but it is sufficiently structured to allow us to
+write a program which will, for example, calculate the total cost of motoring
+over a period of time.
+<p>
+These programs, and this data format, aim to fill the gap between text markup
+systems, which are very flexible, but hard for a program to process, and
+things like tab separated fields, or the various speadsheet export formats,
+which are easy to process, but a bit too rigid for some cases.
+<p>
+Thus there is a hierarchy of interchange formats, starting with
+text/tab-separated, then text/prs.jlines.tag, then text/xml,
+then text/html, then text/plain.
+In general it is easy to convert automatically in the direction of text/plain,
+but processing by an application is easier in the direction of tab-separated.
+
+
+
+<p>
+On this site you will find some specifications for the tag format, and some
+programs which manipulate it.
+
+
+
+<p>
+The current software version is 0.0.9
+<p>
+
+
+<h2>Documentation</h2>
+<ul>
+<li><a href="tag-registration.txt">The IETF types list registration form</a>
+<li><a href="mime-tag-types.txt">A draft document which should become a tag types RFC</a>
+<li><a href="dsc">A directory of tag descriptors</a>
+<li><a href="background.html">Some information on the reasoning behind the design</a>
+</ul>
+  
+<h2>Programs</h2>
+
+<ul>
+<li><a href="tag-types-0.0.9.tar.gz">Software to manipulate tag streams</a>
+<li><a href="doc/tagprogs.html">Some documentation for the tag utility software (also in the tar file)</a>
+<li><a href="changes.html">The change history for the tag types software</a>
+<li><a href="actions/index.html">An actions/todo system</a>
+<li><a href="rfc/index.html">Sofware to handle Internet RFCs and drafts</a>
+<li><a href="https://github.com/JohnLines/taglog">An electronic workbook, noting times and events associated with projects</a>
+
+</ul>
+
+<hr>
+<address>
+Author: <a href="https://paladyn.org/john/">John Lines</a>
+<a href="mailto:john+tag-types@paladyn.org">john+tag-types@paladyn.org</a>
+</address>
+
+
+
+</body>

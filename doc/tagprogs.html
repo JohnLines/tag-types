@@ -1,0 +1,61 @@
+<title>Tag related programs</title>
+<h1>Tag related programs</h1>
+
+
+The tag programs are rather like the Rand Mail Handler (MH) in being a
+set of tools to manipulate the data - they are a construction set for
+building applications rather than an application in their own right.
+
+<dl>
+
+<dt>tagdiff<dd>
+	gives the difference between 2 tag files - can take advantage of
+	understanding the structure to synchronise better than normal diff.
+
+<dt>tagedit<dd>
+	Edit a tag file
+
+<dt><a href=tag2html.html>tag2html</a><dd>
+	turn a tag file into html
+
+<dt>tagcheck<dd>
+	take in a tag file and a tag descriptor file and check the tag file
+	tagcheck -f could fix some problems, for example missing end tags.
+
+<dt>tagdscgen<dd>
+	generate a descriptor file from a tag file (really just a fancy
+	output of all the different tags found - it should be able to
+	work out which is the primary tag)
+
+<dt>tagsort<dd>
+	sort a tag file, outputting the records in an order determined by
+	the value of some of the tags
+
+<dt><a href=tagreplace.html>tagreplace</a><dd>
+	replace the contents of a tag record with values taken from the
+	command line, or a file
+
+<dt><a href=tagextract.html>tagextract</a><dd>
+	output a subset of records from a tag file e.g.
+		tagextract -m Priority -le 6 < actions.dat
+
+<dt>tagshow<dd>
+	Display selected fields from a tag file, e.g.
+		tagshow	Title,Priority "%s:%s\n"
+	will show the Title and Priority fields from a tag file
+	The default if no format string is given is just to show a
+	single field per line
+
+<dt>tagdispatch<dd>
+	takes a tag file as input and pass it on to another program
+	depending on what type it is. The intention is that this can be
+	used as a target by, for example metamail, and it will in turn
+	invoke a different program for a recipie tag file from an
+	actions file.
+<dt>tag2tab<dd>
+	Convert a tag file into a tag seperated file.
+<dt>tab2tag<dd>
+	Convert a tab seperated file into a tag file
+<dt><a href=tagcount.html>tagcount</a><dd>Count things in a tag file
+
+</dl>

@@ -1,0 +1,45 @@
+<title>Tagreplace - replace values within a tagged file</title>
+
+<h2>Syntax</h2>
+
+<pre>
+	tagreplace [-h][-a][-m [ fieldname op [fieldvalue]]... [-n num]
+            [-r [fieldname [fieldvalue]...][-f replacefilename]
+            [tagfilename]
+
+</pre>
+
+<h2>Description</h2>
+
+
+<h3>Modifier flags</h3>
+<dl>
+<dt>-h<dd>Disables normal header processing. If this is not present then
+the first record is assumed to be a header, and will always be output
+intact as the new header record.
+<dt>-a<dd>The selection and replacement process will operate on ALL matching
+records, rather than just the first (which is the default).
+<p>Matching just the first is expected to be the most common case where the
+selection is done by giving the primary tag of the file to match against.
+<dt>-m [fieldname op [fieldvalue]]<dd> gives the condition to match to select
+the record(s) for replacement.
+<dt>-n num<dd>replace record number num
+<dt>-r [fieldname [fieldvalue]]<dd> gives the fields to be replaced using the
+command line - the given fields in the selected record(s) will be replaced,
+but the others will be unchanged.
+<dt>-f replacementfilename<dd>the entire contents of the selected record(s)
+will be replaced by the contents of the file, which must be in valid tag
+format.
+<dt>-d<dd>Print debugging information to stderr
+
+</dl>
+
+<h3>Conditions</h3>
+Most condition tests are of the form
+<pre>
+	fieldname operator value
+</pre>
+but some do not require the value.  
+
+<h3>Bugs</h3>
+The whole thing is not yet implemented

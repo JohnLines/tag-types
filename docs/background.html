@@ -1,0 +1,114 @@
+<title>Tag Types background information</title>
+<h1>Tag Types background information</h1>
+
+This document describes some of the background to the tag types format,
+why I think it is useful, and the reasons for the design choices.
+
+
+<h2>Why a tag types format ?</h2>
+
+By tagged data I mean ascii text in a form like:
+<pre>
+Name1: value1
+Name2: value2
+...
+</pre>
+
+<p>
+
+There are many examples of tagged data already in use, but each one has
+been invented to deal with a particular specific case, and often, while
+the information is presented in a tagged style format, it is not
+sufficiently regular to process by a program.
+
+
+<p>
+Examples of existing tagged data are:
+<ul>
+<li>Bibliographic records (RFC1807)
+<li>The LDAP Interchange format
+<li>Linux LSM files
+<li>Quicken Interchange Files
+</ul>
+
+
+<h2>Design Goals</h2>
+
+<h3>Interchange format</h3>
+The intention is specifically for an interchange format, rather than one which
+will provide an efficient implementation. It should be easy for an application
+to read in a tagged file and turn it into its own internal representation,
+and also for it to output its internal representation as a tagged file.
+
+
+<h3>Semantic independant processing</h3>
+By this I mean that it should be possible to perform useful operations on
+tagged data without knowing what the particular tagged data is about.
+A program should be able to extract information from a tagged file about
+recipies as well as one about books at the level of 'find me all the records
+which have this value in this field'
+<p>
+The benefit from this is that common tools can be written, allowing programs
+which deal with the semantic content to concentrate on doing that well.
+
+
+<h3>Easily understood format</h3>
+Many recipients of tagged data will not have (initially at least) a program
+which can deal with it. It should be understandable without needing a program
+to interpret the information.
+<p>
+A side effect of this is that it should not be nescessary to send the same
+information twice, i.e. Here is this information in ascii text for a person
+to read, and now here it is again for automated processing.
+
+<h3>Ability to encapsulate general text data unchanged</h3>
+Many tagged formats have problems once they move beyond the plain
+<pre>
+Tag: Value
+</pre>
+style.
+The end result of this tends to be that descriptions, or other text that
+the creator wishes to preserve will be moved outside the tag format.
+I wished to avoid rules like
+<ul>
+<li>Continuation lines are indicated by some special character on the end of
+a line
+<li>Values continue until the next thing which looks like a tag.
+</ul>
+<p>
+Preserving general text within the format permits arbitary data which may
+come from some more powerful format to be saved inside a tag record, and
+extracted again by the same application.
+
+<h3>Not trying to solve everything</h3>
+
+Once you start to design more than one tag type for different applications
+you realise that there are overlaps between different tag types. It is
+very tempting to try to build some form of object oriented system which
+could be expanded to handle every possible piece of data. The tag types
+format is deliberately targetted at handling the easy cases in a
+consistent manner. It is possible that integration between types may be
+provided by some kind of standardisation within the tag descriptor files
+at a later stage.
+
+<h2>Other influences on the design</h2>
+
+<h3>Why not use SGML</h3>
+SGML (the parent standard to HTML) has had a profound influence on the
+Internet, but it is more aimed at structuring documents which are targetted
+at a human reader. It would be possible to do something similar to
+the tag type description types with SGML
+DTDs. There are 2 reasons for not going this route. One is that the tag
+types format is lightweight, and should be capable of implementation within
+personal organisers, pagers etc. The second is the experimental evidence that
+people seem to be drawn to a tag type format whenever they invent something
+like this.
+
+
+
+<h3>Why not use ASN.1 / SNMP</h3>
+The system used within SNMP which is implicitly capable of giving a unique
+object identifier to everything in the world is very powerful, but the
+encoding is too complex to use in mail messages. There may be a place for
+using some of the ideas.
+ 
